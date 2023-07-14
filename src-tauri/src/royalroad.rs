@@ -2,7 +2,6 @@ use reqwest;
 use lazy_static::lazy_static;
 use regex::Regex;
 
-
 #[derive(Debug)]
 pub struct ChapterContent {
     pub start_note: Option<String>,
@@ -88,5 +87,27 @@ impl Story {
             desctiption: description.to_string(),
             chapters,
         }
+    }
+}
+
+pub struct StoryManager {
+    pub stories: Vec<Story>,
+    pub follows: Vec<usize>,
+    pub finished: Vec<usize>,
+    pub read_later: Vec<usize>,
+}
+
+impl StoryManager {
+    pub fn new() -> Self {
+        Self {
+            stories: vec![],
+            follows: vec![],
+            finished: vec![],
+            read_later: vec![],
+        }
+    }
+
+    pub fn add_story_from_url(&mut self, url: String) {
+        self.stories.push(Story::from_page_url(url));
     }
 }

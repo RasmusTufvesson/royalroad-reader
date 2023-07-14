@@ -1,0 +1,22 @@
+[package]
+name = "royalroad-reader"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1.4", features = [] }
+
+[dependencies]
+lazy_static = "1.4.0"
+regex = "1.9.1"
+reqwest = { version = "0.11.18", features = ["blocking"] }
+tauri = { version = "1.4", features = ["shell-open"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[features]
+# this feature is used for production builds or when `devPath` points to the filesystem
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
