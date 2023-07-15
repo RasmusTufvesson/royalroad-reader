@@ -2,7 +2,7 @@ use reqwest;
 use lazy_static::lazy_static;
 use regex::Regex;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct ChapterContent {
     pub start_note: Option<String>,
     pub chapter_content: String,
@@ -45,7 +45,9 @@ impl Chapter {
     }
 
     pub fn load_content(&mut self) {
-        self.content = Some(ChapterContent::from_url(&self.url));
+        if self.content == None {
+            self.content = Some(ChapterContent::from_url(&self.url));
+        }
     }
 }
 
