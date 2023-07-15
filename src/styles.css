@@ -1,5 +1,5 @@
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Helvetica Neue, Helvetica, Roboto, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
@@ -75,7 +75,7 @@ button {
 }
 
 :root {
-  color: #f6f6f6;
+  color: #d0d0d0;
   background-color: #191919;
 }
 
@@ -107,4 +107,14 @@ button:active {
 
 .empty {
   display: none;
+}
+
+.note-title {
+  font-size: 12px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.note > p:first-child {
+  margin-top: 0px;
 }

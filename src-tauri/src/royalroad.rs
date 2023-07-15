@@ -58,6 +58,7 @@ pub struct Story {
     pub page_url: String,
     pub desctiption: String,
     pub chapters: Vec<Chapter>,
+    pub author: String,
 }
 
 impl Story {
@@ -75,6 +76,9 @@ impl Story {
             static ref CHAPTER_REGEX: Regex = Regex::new(
                 r#"<tr style="cursor: pointer" data-url="(.*?)" data-volume-id="null" class="chapter-row">[\t\n ]*<td>[\t\n ]*<a href=".*?">[\t\n ]*(.*?)[\t\n ]*<\/a>[\t\n ]*<\/td>[\t\n ]*<td data-content="[0-9]*?" class="text-right">[\t\n ]*<a href=".*?" data-content=".*?">[\t\n ]*<time unixtime="[0-9]*" title=".*?" datetime=".*?" format="agoshort">.*?<\/time> ago[\t\n ]*<\/a>[\t\n ]*<\/td>[\t\n ]*<\/tr>"#
             ).unwrap();
+            static ref AUTHOR_REGEX: Regex = Regex::new(
+                r#"<meta property="books:author" content="(.*?)"\/>"#
+            ).unwrap();
         }
         let title = TITLE_REGEX.captures(&content).unwrap().get(1).unwrap().as_str();
         let id = ID_REGEX.captures(&url).unwrap().get(1).unwrap().as_str();
@@ -82,12 +86,14 @@ impl Story {
         let chapters = CHAPTER_REGEX.captures_iter(&content).map(|x|
             Chapter::from_name_and_url(x.get(2).unwrap().as_str().to_string(), "https://www.royalroad.com".to_string() + x.get(1).unwrap().as_str())
         ).collect();
+        let author = AUTHOR_REGEX.captures(&content).unwrap().get(1).unwrap().as_str();
         Self {
             title: title.to_string(),
             id: id.parse().unwrap(),
             page_url: url,
             desctiption: description.to_string(),
             chapters,
+            author: author.to_string(),
         }
     }
 }

@@ -23,17 +23,23 @@ struct ChapterResponse {
     content: String,
     start_note: String,
     end_note: String,
+    title: String,
+    author: String,
 }
 
 #[tauri::command]
 fn get_chapter(state: tauri::State<Mutex<AppState>>, story_index: usize, chapter_index: usize) -> ChapterResponse {
     state.lock().unwrap().manager.stories[story_index].chapters[chapter_index].load_content();
     let state = state.lock().unwrap();
-    let chap_content = &state.manager.stories[story_index].chapters[chapter_index].content.as_ref().unwrap();
+    let story = &state.manager.stories[story_index];
+    let chap = &story.chapters[chapter_index];
+    let chap_content = &chap.content.as_ref().unwrap();
     ChapterResponse {
         content: chap_content.chapter_content.clone(),
         start_note: chap_content.start_note.as_ref().ok_or("").unwrap().clone(),
         end_note: chap_content.end_note.as_ref().ok_or("").unwrap().clone(),
+        title: chap.name.clone(),
+        author: story.author.clone(),
     }
 }
 
