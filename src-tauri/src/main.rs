@@ -25,6 +25,8 @@ struct ChapterResponse {
     end_note: String,
     title: String,
     author: String,
+    before_exists: bool,
+    after_exists: bool,
 }
 
 #[tauri::command]
@@ -36,10 +38,12 @@ fn get_chapter(state: tauri::State<Mutex<AppState>>, story_index: usize, chapter
     let chap_content = &chap.content.as_ref().unwrap();
     ChapterResponse {
         content: chap_content.chapter_content.clone(),
-        start_note: chap_content.start_note.as_ref().ok_or("").unwrap().clone(),
-        end_note: chap_content.end_note.as_ref().ok_or("").unwrap().clone(),
+        start_note: chap_content.start_note.as_ref().or(Some(&("".to_string()))).unwrap().clone(),
+        end_note: chap_content.end_note.as_ref().or(Some(&("".to_string()))).unwrap().clone(),
         title: chap.name.clone(),
         author: story.author.clone(),
+        before_exists: chapter_index != 0,
+        after_exists: chapter_index != story.chapters.len() - 1,
     }
 }
 

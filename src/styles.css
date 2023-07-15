@@ -1,6 +1,6 @@
 :root {
   font-family: Helvetica Neue, Helvetica, Roboto, Arial, sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 24px;
   font-weight: 400;
 
@@ -9,6 +9,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  
+  color: #d0d0d0;
+  background-color: #191919;
 }
 
 ::-webkit-scrollbar {
@@ -56,6 +59,8 @@ button {
   font-family: inherit;
   transition: border-color 0.25s;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+  color: #d0d0d0;
+  font-family: Helvetica Neue, Helvetica, Roboto, Arial, sans-serif;
 }
 
 button {
@@ -74,22 +79,22 @@ button {
   outline: none;
 }
 
-:root {
-  color: #d0d0d0;
-  background-color: #191919;
-}
-
 a:hover {
   color: #24c8db;
 }
 
 input,
 button {
-  color: #ffffff;
   background-color: #0f0f0f98;
 }
 button:active {
   background-color: #0f0f0f69;
+}
+button:disabled {
+  background-color: #130606;
+}
+button:disabled:hover {
+  border-color: #9d3131;
 }
 
 .container {
@@ -117,4 +122,26 @@ button:active {
 
 .note > p:first-child {
   margin-top: 0px;
+}
+
+.invisible-container {
+  width: 75%;
+  margin: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.next-previous-container > button {
+  width: 10rem;
+  margin-bottom: 20px;
+}
+
+.next-previous-container > button:first-child {
+  float: left;
+}
+
+.next-previous-container > button:last-child {
+  float: right;
 }
