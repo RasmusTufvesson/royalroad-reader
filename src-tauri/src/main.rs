@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::sync::Mutex;
+use tauri::Manager;
 mod royalroad;
 
 struct AppState {
@@ -17,14 +18,32 @@ fn add_story(state: tauri::State<Mutex<AppState>>, url: &str) {
     state.lock().unwrap().manager.add_story_from_url(url.to_string());
 }
 
+#[derive(serde::Serialize)]
+struct ChapterResponse {
+    content: String,
+    start_note: String,
+    end_note: String,
+}
+
 #[tauri::command]
-fn get_chapter(state: tauri::State<Mutex<AppState>>, story_index: usize, chapter_index: usize) -> String {
+fn get_chapter(state: tauri::State<Mutex<AppState>>, story_index: usize, chapter_index: usize) -> ChapterResponse {
     state.lock().unwrap().manager.stories[story_index].chapters[chapter_index].load_content();
-    state.lock().unwrap().manager.stories[story_index].chapters[chapter_index].content.as_ref().unwrap().chapter_content.clone()
+    let state = state.lock().unwrap();
+    let chap_content = &state.manager.stories[story_index].chapters[chapter_index].content.as_ref().unwrap();
+    ChapterResponse {
+        content: chap_content.chapter_content.clone(),
+        start_note: chap_content.start_note.as_ref().ok_or("").unwrap().clone(),
+        end_note: chap_content.end_note.as_ref().ok_or("").unwrap().clone(),
+    }
 }
 
 fn main() {
     tauri::Builder::default()
+        .setup(|app| {
+            let main_window = app.get_window("main").unwrap();
+            main_window.center()?;
+            Ok(())
+        })
         .manage(Mutex::new(AppState { manager: royalroad::StoryManager::new() }))
         .invoke_handler(tauri::generate_handler![add_story, get_chapter])
         .run(tauri::generate_context!())
