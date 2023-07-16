@@ -1,4 +1,5 @@
 const { invoke } = window.__TAURI__.tauri;
+const { appWindow } = window.__TAURI__.window;
 
 let chapEl;
 let startNoteEl;
@@ -10,6 +11,11 @@ let nextEl;
 let previousEl;
 let storyIndex = 0;
 let chapterIndex = 201;
+let windowEl;
+
+appWindow.onResized(({ payload: size }) => {
+  windowEl.style.height = (size.height - 38) + "px";
+});
 
 window.nextPage = async function() {
   chapterIndex += 1;
@@ -43,7 +49,6 @@ async function loadPage() {
   for(var i = 0; i < author_refs.length; i++) {
     author_refs[i].innerText = res.author;
   }
-  console.log(res.after_exists);
   nextEl.disabled = !res.after_exists;
   previousEl.disabled = !res.before_exists;
 }
@@ -57,6 +62,16 @@ window.addEventListener("DOMContentLoaded", async () => {
   titleEl = document.querySelector("#chapter-title");
   nextEl = document.querySelector("#next");
   previousEl = document.querySelector("#prev");
+  windowEl = document.querySelector("#window");
+  document
+    .getElementById('titlebar-minimize')
+    .addEventListener('click', () => appWindow.minimize());
+  document
+    .getElementById('titlebar-maximize')
+    .addEventListener('click', () => appWindow.toggleMaximize());
+  document
+    .getElementById('titlebar-close')
+    .addEventListener('click', () => appWindow.close());
   await invoke("add_story", { url: "https://www.royalroad.com/fiction/15935/there-is-no-epic-loot-here-only-puns" });
   await loadPage();
 });

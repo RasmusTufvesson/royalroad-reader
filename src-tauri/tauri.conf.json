@@ -16,7 +16,18 @@
       "shell": {
         "all": false,
         "open": true
-      }
+      },
+      "window": {
+          "all": false,
+          "close": true,
+          "hide": true,
+          "show": true,
+          "maximize": true,
+          "minimize": true,
+          "unmaximize": true,
+          "unminimize": true,
+          "startDragging": true
+        }
     },
     "bundle": {
       "active": true,
@@ -39,7 +50,8 @@
         "resizable": true,
         "title": "Royal Road reader",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "decorations": false
       }
     ]
   }
