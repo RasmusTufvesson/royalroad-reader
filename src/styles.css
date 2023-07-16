@@ -147,12 +147,22 @@ button:disabled:hover {
   float: right;
 }
 
-.titlebar {
+.titlebar-right {
+  height: 30px;
+  user-select: none;
+  display: flex;
+  justify-content: flex-end;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  right: 0;
+}
+.titlebar-left {
   height: 30px;
   background: #191919;
   user-select: none;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   position: fixed;
   top: 0;
   left: 0;
@@ -168,11 +178,21 @@ button:disabled:hover {
 .titlebar-button:hover {
   background: #222222;
 }
+.titlebar-text-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  padding: 0px 0.6em;
+}
+.titlebar-text-button:hover {
+  background: #222222;
+}
 
 .window {
   position: relative;
   top: 30px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 body {
@@ -183,4 +203,23 @@ body {
 
 .window-inner {
   margin-bottom: 80px;
+}
+
+.stories-container > div > h2 {
+  margin-bottom: 0px;
+}
+.stories-container > div > p {
+  margin-top: 0px;
+}
+
+.inner-container {
+  background-color: #242424;
+  margin: auto;
+  border-style: solid;
+  border-color: #363636;
+  border-width: 2px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }

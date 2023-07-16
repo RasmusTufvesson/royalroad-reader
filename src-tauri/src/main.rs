@@ -47,6 +47,22 @@ fn get_chapter(state: tauri::State<Mutex<AppState>>, story_index: usize, chapter
     }
 }
 
+#[derive(serde::Serialize)]
+struct StoryResponse {
+    title: String,
+    author: String,
+}
+
+#[tauri::command]
+fn get_stories(state: tauri::State<Mutex<AppState>>) -> Vec<StoryResponse> {
+    state.lock().unwrap().manager.stories.iter().map(|story| {
+        StoryResponse {
+            title: story.title.clone(),
+            author: story.author.clone(),
+        }
+    }).collect()
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -55,7 +71,7 @@ fn main() {
             Ok(())
         })
         .manage(Mutex::new(AppState { manager: royalroad::StoryManager::new() }))
-        .invoke_handler(tauri::generate_handler![add_story, get_chapter])
+        .invoke_handler(tauri::generate_handler![add_story, get_chapter, get_stories])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

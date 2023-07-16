@@ -20,13 +20,13 @@ appWindow.onResized(({ payload: size }) => {
 window.nextPage = async function() {
   chapterIndex += 1;
   await loadPage();
-  window.scrollTo(0, 0);
+  windowEl.scrollTo(0, 0);
 }
 
 window.prevPage = async function() {
   chapterIndex -= 1;
   await loadPage();
-  window.scrollTo(0, 0);
+  windowEl.scrollTo(0, 0);
 }
 
 async function loadPage() {
