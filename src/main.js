@@ -9,8 +9,8 @@ let endNoteContEl;
 let titleEl;
 let nextEl;
 let previousEl;
-let storyIndex = 0;
-let chapterIndex = 201;
+let storyIndex;
+let chapterIndex;
 let windowEl;
 
 appWindow.onResized(({ payload: size }) => {
@@ -72,6 +72,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   document
     .getElementById('titlebar-close')
     .addEventListener('click', () => appWindow.close());
-  await invoke("add_story", { url: "https://www.royalroad.com/fiction/15935/there-is-no-epic-loot-here-only-puns" });
+  const page = await invoke("get_story")
+  storyIndex = page.story_index
+  chapterIndex = page.chapter_index
   await loadPage();
+  windowEl.style.display = null;
 });

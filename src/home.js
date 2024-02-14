@@ -9,6 +9,7 @@ appWindow.onResized(({ payload: size }) => {
 });
 
 window.addEventListener("DOMContentLoaded", async () => {
+    await invoke("add_story", { url: "https://www.royalroad.com/fiction/15935/there-is-no-epic-loot-here-only-puns" });
     windowEl = document.querySelector("#window");
     storyEl = document.querySelector("#stories-container");
     document
@@ -23,13 +24,27 @@ window.addEventListener("DOMContentLoaded", async () => {
     let stories = await invoke("get_stories");
     stories.forEach(story => {
         let el = document.createElement("div");
+        let div = document.createElement("div");
         let title = document.createElement("h2");
         title.innerHTML = "<strong>" + story.title + "</strong>";
-        el.appendChild(title);
+        div.appendChild(title);
         let author = document.createElement("p");
         author.innerHTML = "<small>By " + story.author + "</small>";
-        el.appendChild(author);
-        el.classList.add("inner-container")
+        div.appendChild(author);
+        el.appendChild(div);
+        el.classList.add("inner-container");
+        let readDiv = document.createElement("div");
+        let read = document.createElement("button");
+        let readImg = document.createElement("img");
+        readImg.src = "/assets/play.svg";
+        readImg.alt = "read";
+        read.appendChild(readImg);
+        read.addEventListener('click', async () => {
+            await invoke("set_story", { storyIndex: story.index, chapterIndex: 201 });
+            window.location.href = "/story";
+        });
+        readDiv.appendChild(read);
+        el.appendChild(readDiv);
         storyEl.appendChild(el);
     });
 });

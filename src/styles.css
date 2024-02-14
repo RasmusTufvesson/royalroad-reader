@@ -108,6 +108,7 @@ button:disabled:hover {
   padding-right: 20px;
   margin-top: 20px;
   margin-bottom: 20px;
+  border-radius: 4px;
 }
 
 .empty {
@@ -205,10 +206,19 @@ body {
   margin-bottom: 80px;
 }
 
-.stories-container > div > h2 {
+.stories-container > div {
+  display: flex;
+  align-items: stretch;
+}
+
+.stories-container > div > div:first-child {
+  flex-grow: 1;
+}
+
+.stories-container > div > div > h2 {
   margin-bottom: 0px;
 }
-.stories-container > div > p {
+.stories-container > div > div > p {
   margin-top: 0px;
 }
 
@@ -222,4 +232,17 @@ body {
   padding-right: 20px;
   margin-top: 20px;
   margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.stories-container > div > div:last-child {
+  flex-grow: 10;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.stories-container > div > div > button {
+  height: 50px;
+  width: 50px;
 }

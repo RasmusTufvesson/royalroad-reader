@@ -6,6 +6,7 @@ mod royalroad;
 
 struct AppState {
     manager: royalroad::StoryManager,
+    story_page: Page,
 }
 
 // #[tauri::command]
@@ -15,7 +16,7 @@ struct AppState {
 
 #[tauri::command]
 fn add_story(state: tauri::State<Mutex<AppState>>, url: &str) {
-    state.lock().unwrap().manager.add_story_from_url(url.to_string());
+    let _ = state.lock().unwrap().manager.add_story_from_url(url.to_string());
 }
 
 #[derive(serde::Serialize)]
@@ -51,16 +52,36 @@ fn get_chapter(state: tauri::State<Mutex<AppState>>, story_index: usize, chapter
 struct StoryResponse {
     title: String,
     author: String,
+    index: usize,
 }
 
 #[tauri::command]
 fn get_stories(state: tauri::State<Mutex<AppState>>) -> Vec<StoryResponse> {
-    state.lock().unwrap().manager.stories.iter().map(|story| {
+    state.lock().unwrap().manager.stories.iter().enumerate().map(|(index, story)| {
         StoryResponse {
             title: story.title.clone(),
             author: story.author.clone(),
+            index,
         }
     }).collect()
+}
+
+#[derive(serde::Serialize, Clone)]
+struct Page {
+    story_index: usize,
+    chapter_index: usize,
+}
+
+#[tauri::command]
+fn set_story(state: tauri::State<Mutex<AppState>>, story_index: usize, chapter_index: usize) {
+    let page = &mut state.lock().unwrap().story_page;
+    page.story_index = story_index;
+    page.chapter_index = chapter_index;
+}
+
+#[tauri::command]
+fn get_story(state: tauri::State<Mutex<AppState>>) -> Page {
+    state.lock().unwrap().story_page.clone()
 }
 
 fn main() {
@@ -70,8 +91,8 @@ fn main() {
             main_window.center()?;
             Ok(())
         })
-        .manage(Mutex::new(AppState { manager: royalroad::StoryManager::new() }))
-        .invoke_handler(tauri::generate_handler![add_story, get_chapter, get_stories])
+        .manage(Mutex::new(AppState { manager: royalroad::StoryManager::new(), story_page: Page { story_index: 0, chapter_index: 0 } }))
+        .invoke_handler(tauri::generate_handler![add_story, get_chapter, get_stories, set_story, get_story])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

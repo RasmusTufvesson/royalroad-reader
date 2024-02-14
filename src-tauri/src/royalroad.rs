@@ -54,7 +54,7 @@ impl Chapter {
 #[derive(Debug)]
 pub struct Story {
     pub title: String,
-    id: u32,
+    pub id: u32,
     pub page_url: String,
     pub desctiption: String,
     pub chapters: Vec<Chapter>,
@@ -115,7 +115,13 @@ impl StoryManager {
         }
     }
 
-    pub fn add_story_from_url(&mut self, url: String) {
+    pub fn add_story_from_url(&mut self, url: String) -> Result<(), &'static str> {
+        for story in &self.stories {
+            if story.page_url == url {
+                return Err("Already loaded");
+            }
+        }
         self.stories.push(Story::from_page_url(url));
+        Ok(())
     }
 }
