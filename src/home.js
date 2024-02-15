@@ -35,13 +35,18 @@ window.addEventListener("DOMContentLoaded", async () => {
         readImg.src = "/assets/play.svg";
         readImg.alt = "read";
         read.appendChild(readImg);
-        read.addEventListener('click', async () => {
-            await invoke("set_story", { storyIndex: story.index, chapterIndex: 201 });
-            window.location.href = "/chapter";
-        });
         readDiv.appendChild(read);
         el.appendChild(readDiv);
         storyEl.appendChild(el);
+
+        read.addEventListener('click', async () => {
+            await invoke("set_read_page", { storyIndex: story.index, chapterIndex: 201 });
+            window.location.href = "/chapter";
+        });
+        title.addEventListener('click', async () => {
+            await invoke("set_story_page", { storyIndex: story.index });
+            window.location.href = "/story";
+        });
     });
     windowEl.style.display = null;
 });

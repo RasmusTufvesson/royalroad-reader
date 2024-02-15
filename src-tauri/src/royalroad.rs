@@ -56,7 +56,7 @@ pub struct Story {
     pub title: String,
     pub id: u32,
     pub page_url: String,
-    pub desctiption: String,
+    pub description: String,
     pub chapters: Vec<Chapter>,
     pub author: String,
 }
@@ -91,7 +91,7 @@ impl Story {
             title: title.to_string(),
             id: id.parse().unwrap(),
             page_url: url,
-            desctiption: description.to_string(),
+            description: description.to_string(),
             chapters,
             author: author.to_string(),
         }

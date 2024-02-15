@@ -68,7 +68,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   document
     .getElementById('titlebar-close')
     .addEventListener('click', () => appWindow.close());
-  const page = await invoke("get_story")
+  const page = await invoke("get_read_page")
   storyIndex = page.story_index
   chapterIndex = page.chapter_index
   await loadPage();
