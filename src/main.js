@@ -13,10 +13,6 @@ let storyIndex;
 let chapterIndex;
 let windowEl;
 
-appWindow.onResized(({ payload: size }) => {
-  windowEl.style.height = (size.height - 38) + "px";
-});
-
 window.nextPage = async function() {
   chapterIndex += 1;
   await loadPage();

@@ -191,7 +191,7 @@ button:disabled:hover {
 }
 
 .window {
-  position: relative;
+  position: absolute;
   top: 30px;
   overflow-y: auto;
 }

@@ -4,10 +4,6 @@ const { appWindow } = window.__TAURI__.window;
 let storyEl;
 let windowEl;
 
-appWindow.onResized(({ payload: size }) => {
-    windowEl.style.height = (size.height - 38) + "px";
-});
-
 window.addEventListener("DOMContentLoaded", async () => {
     await invoke("add_story", { url: "https://www.royalroad.com/fiction/15935/there-is-no-epic-loot-here-only-puns" });
     windowEl = document.querySelector("#window");
@@ -41,10 +37,11 @@ window.addEventListener("DOMContentLoaded", async () => {
         read.appendChild(readImg);
         read.addEventListener('click', async () => {
             await invoke("set_story", { storyIndex: story.index, chapterIndex: 201 });
-            window.location.href = "/story";
+            window.location.href = "/chapter";
         });
         readDiv.appendChild(read);
         el.appendChild(readDiv);
         storyEl.appendChild(el);
     });
+    windowEl.style.display = null;
 });
