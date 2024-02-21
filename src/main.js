@@ -12,15 +12,66 @@ let previousEl;
 let storyIndex;
 let chapterIndex;
 let windowEl;
+let skipEl;
+let reverseEl;
+let storedProgress;
+
+async function set_progress() {
+  await invoke("set_story_progress", { storyIndex: storyIndex, progress: chapterIndex });
+  storedProgress = chapterIndex;
+}
 
 window.nextPage = async function() {
   chapterIndex += 1;
+  let progress_diff = chapterIndex - storedProgress;
+  console.log(progress_diff)
+  if (progress_diff == 1) {
+    await set_progress();
+    reverseEl.classList.add("empty")
+    skipEl.classList.add("empty")
+  } else if (progress_diff > 1) {
+    reverseEl.classList.add("empty")
+    skipEl.classList.remove("empty")
+    skipEl.addEventListener('click', async () => {
+      await set_progress();
+      skipEl.classList.add("empty")
+    });
+  } else if (progress_diff < 0) {
+    console.log("reverse")
+    skipEl.classList.add("empty")
+    reverseEl.classList.remove("empty")
+    reverseEl.addEventListener('click', async () => {
+      await set_progress();
+      reverseEl.classList.add("empty")
+    });
+  }
   await loadPage();
   windowEl.scrollTo(0, 0);
 }
 
 window.prevPage = async function() {
   chapterIndex -= 1;
+  let progress_diff = chapterIndex - storedProgress;
+  console.log(progress_diff)
+  if (progress_diff == 1) {
+    await set_progress();
+    reverseEl.classList.add("empty")
+    skipEl.classList.add("empty")
+  } else if (progress_diff > 1) {
+    reverseEl.classList.add("empty")
+    skipEl.classList.remove("empty")
+    skipEl.addEventListener('click', async () => {
+      await set_progress();
+      skipEl.classList.add("empty")
+    });
+  } else if (progress_diff < 0) {
+    skipEl.classList.add("empty")
+    reverseEl.classList.remove("empty")
+    reverseEl.addEventListener('click', async () => {
+      await set_progress();
+      reverseEl.classList.add("empty")
+    });
+  }
   await loadPage();
   windowEl.scrollTo(0, 0);
 }
@@ -59,6 +110,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   nextEl = document.querySelector("#next");
   previousEl = document.querySelector("#prev");
   windowEl = document.querySelector("#window");
+  skipEl = document.querySelector("#set-progress-skip-container");
+  reverseEl = document.querySelector("#set-progress-reverse-container");
   document
     .getElementById('titlebar-minimize')
     .addEventListener('click', () => appWindow.minimize());
@@ -71,6 +124,21 @@ window.addEventListener("DOMContentLoaded", async () => {
   const page = await invoke("get_read_page")
   storyIndex = page.story_index
   chapterIndex = page.chapter_index
+  storedProgress = await invoke("get_story_progress", { storyIndex: storyIndex });
+  let progress_diff = chapterIndex - storedProgress;
+  if (progress_diff > 1) {
+    skipEl.classList.remove("empty")
+    skipEl.addEventListener('click', async () => {
+      await set_progress();
+      skipEl.classList.add("empty")
+    });
+  } else if (progress_diff < 0) {
+    reverseEl.classList.remove("empty")
+    reverseEl.addEventListener('click', async () => {
+      await set_progress();
+      reverseEl.classList.add("empty")
+    });
+  }
   await loadPage();
   windowEl.style.display = null;
 });

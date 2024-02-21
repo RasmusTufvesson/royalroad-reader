@@ -274,4 +274,15 @@ body {
 
 .chapter:hover {
   text-decoration: underline;
+  cursor: pointer;
+}
+
+.container-button {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  width: 100%;
+}
+
+.chapter-container > div:first-child {
+  margin-top: 1em;
 }
