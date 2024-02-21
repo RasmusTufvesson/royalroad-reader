@@ -81,6 +81,15 @@ fn set_read_page(state: tauri::State<Mutex<AppState>>, story_index: usize, chapt
 }
 
 #[tauri::command]
+fn set_read_page_continue(state: tauri::State<Mutex<AppState>>, story_index: usize) {
+    let st = &mut state.lock().unwrap();
+    let chapter_index = st.manager.stories[story_index].progress;
+    let page = &mut st.read_page;
+    page.story_index = story_index;
+    page.chapter_index = chapter_index;
+}
+
+#[tauri::command]
 fn get_read_page(state: tauri::State<Mutex<AppState>>) -> ReadPage {
     state.lock().unwrap().read_page.clone()
 }
@@ -90,6 +99,7 @@ struct StoryInfoResponse {
     title: String,
     author: String,
     description: String,
+    index: usize,
 }
 
 #[derive(serde::Serialize, Clone)]
@@ -104,7 +114,8 @@ fn get_story_info(state: tauri::State<Mutex<AppState>>) -> StoryInfoResponse {
     StoryInfoResponse {
         title: story.title.clone(),
         author: story.author.clone(),
-        description: story.description.clone()
+        description: story.description.clone(),
+        index,
     }
 }
 
@@ -112,6 +123,32 @@ fn get_story_info(state: tauri::State<Mutex<AppState>>) -> StoryInfoResponse {
 fn set_story_page(state: tauri::State<Mutex<AppState>>, story_index: usize) {
     let page = &mut state.lock().unwrap().story_page;
     page.story_index = story_index;
+}
+
+#[tauri::command]
+fn set_story_progress(state: tauri::State<Mutex<AppState>>, story_index: usize, progress: usize) {
+    state.lock().unwrap().manager.stories[story_index].progress = progress;
+}
+
+#[tauri::command]
+fn get_story_progress(state: tauri::State<Mutex<AppState>>, story_index: usize) -> usize {
+    state.lock().unwrap().manager.stories[story_index].progress
+}
+
+#[derive(serde::Serialize)]
+struct ChapterTitleResponse {
+    title: String,
+    index: usize,
+}
+
+#[tauri::command]
+fn get_chapters(state: tauri::State<Mutex<AppState>>, story_index: usize) -> Vec<ChapterTitleResponse> {
+    state.lock().unwrap().manager.stories[story_index].chapters.iter().enumerate().map(|(index, chapter)| {
+        ChapterTitleResponse {
+            title: chapter.name.clone(),
+            index,
+        }
+    }).collect()
 }
 
 fn main() {
@@ -130,6 +167,10 @@ fn main() {
             get_read_page,
             get_story_info,
             set_story_page,
+            set_read_page_continue,
+            set_story_progress,
+            get_story_progress,
+            get_chapters,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

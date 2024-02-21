@@ -215,10 +215,10 @@ body {
   flex-grow: 1;
 }
 
-.stories-container > div > div > h2 {
+.stories-container > div > div > h2, .title {
   margin-bottom: 0px;
 }
-.stories-container > div > div > p {
+.stories-container > div > div > p, .author {
   margin-top: 0px;
 }
 
@@ -245,4 +245,33 @@ body {
 .stories-container > div > div > button {
   height: 50px;
   width: 50px;
+}
+
+.stories-container > div > div > h2:hover {
+  margin-bottom: 0px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.author {
+  text-align: center;
+}
+
+.info-container > * {
+  margin: 0 0 10px;
+}
+
+.info-container > *:first-child {
+  margin-top: 10px;
+}
+
+.continue-button {
+  height: 50px;
+  width: 75%;
+  margin-left: 12.5%;
+  margin-right: 12.5%;
+}
+
+.chapter:hover {
+  text-decoration: underline;
 }

@@ -37,11 +37,12 @@ pub struct Chapter {
     pub content: Option<ChapterContent>,
     pub name: String,
     url: String,
+    id: u32,
 }
 
 impl Chapter {
-    pub fn from_name_and_url(name: String, url: String) -> Self {
-        Self { content: None, name, url }
+    pub fn from_name_and_url(name: String, url: String, id: u32) -> Self {
+        Self { content: None, name, url, id }
     }
 
     pub fn load_content(&mut self) {
@@ -59,6 +60,7 @@ pub struct Story {
     pub description: String,
     pub chapters: Vec<Chapter>,
     pub author: String,
+    pub progress: usize,
 }
 
 impl Story {
@@ -79,12 +81,15 @@ impl Story {
             static ref AUTHOR_REGEX: Regex = Regex::new(
                 r#"<meta property="books:author" content="(.*?)"\/>"#
             ).unwrap();
+            static ref CHAPTER_ID_REGEX: Regex = Regex::new(
+                r#"fiction/[0-9]*/[^/]*/chapter/([0-9]*)/[^/]*"#
+            ).unwrap();
         }
         let title = TITLE_REGEX.captures(&content).unwrap().get(1).unwrap().as_str();
         let id = ID_REGEX.captures(&url).unwrap().get(1).unwrap().as_str();
         let description = DESCRIPTION_REGEX.captures(&content).unwrap().get(1).unwrap().as_str();
         let chapters = CHAPTER_REGEX.captures_iter(&content).map(|x|
-            Chapter::from_name_and_url(x.get(2).unwrap().as_str().to_string(), "https://www.royalroad.com".to_string() + x.get(1).unwrap().as_str())
+            Chapter::from_name_and_url(x.get(2).unwrap().as_str().to_string(), "https://www.royalroad.com".to_string() + x.get(1).unwrap().as_str(), CHAPTER_ID_REGEX.captures(x.get(1).unwrap().as_str()).unwrap().get(1).unwrap().as_str().parse().unwrap())
         ).collect();
         let author = AUTHOR_REGEX.captures(&content).unwrap().get(1).unwrap().as_str();
         Self {
@@ -94,6 +99,7 @@ impl Story {
             description: description.to_string(),
             chapters,
             author: author.to_string(),
+            progress: 0,
         }
     }
 }
