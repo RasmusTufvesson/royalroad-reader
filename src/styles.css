@@ -303,3 +303,8 @@ button.active-button {
 button:active.active-button {
   background-color: #0f0f1869;
 }
+
+.form-container {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}

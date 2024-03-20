@@ -6,26 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Royal Road reader</title>
     <script type="module" src="/common.js" defer></script>
-    <script type="module" src="/home.js" defer></script>
+    <script type="module" src="/register.js" defer></script>
   </head>
 
   <body>
     <div class="window" id="window" style="height: 570px; width: 800px; display: none;">
       <div class="window-inner">
-        <h1>Home</h1>
-        <div class="invisible-container">
-          <button onclick="window.location = '/register'">Register story</button>
-        </div>
-        <div id="stories-container" class="container stories-container">
-          
+        <h1>Register story</h1>
+        <div class="container form-container">
+          <label for="url"><b>Story url</b></label>
+          <br>
+          <input type="text" name="url" id="url">
+          <br><br>
+          <button id="register">Register</button>
+          <button onclick="window.location = '/'">Cancel</button>
         </div>
       </div>
     </div>
     <div data-tauri-drag-region class="titlebar-left">
-      <div class="titlebar-text-button" id="titlebar-home">
+      <div class="titlebar-text-button" id="titlebar-home" onclick="window.location = '/'">
         <p><strong>Home</strong></p>
       </div>
-      <div class="titlebar-text-button" id="titlebar-follows" onclick="window.location = '/follows'">
+      <div class="titlebar-text-button" id="titlebar-follows">
         <p><strong>Follows</strong></p>
       </div>
       <div class="titlebar-text-button" id="titlebar-home" onclick="window.location = '/later'">
