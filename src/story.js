@@ -7,6 +7,13 @@ let titleEl;
 let authorEl;
 let windowEl;
 let continueEl;
+let followEl;
+let finishedEl;
+let laterEl;
+
+function change_active(element) {
+    element.classList.toggle("active-button")
+}
 
 window.addEventListener("DOMContentLoaded", async () => {
     windowEl = document.querySelector("#window");
@@ -15,6 +22,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     titleEl = document.querySelector("#story-title");
     authorEl = document.querySelector("#story-author");
     continueEl = document.querySelector("#continue-button");
+    followEl = document.querySelector("#follow-button");
+    finishedEl = document.querySelector("#finished-button");
+    laterEl = document.querySelector("#read-later-button");
     document
         .getElementById('titlebar-minimize')
         .addEventListener('click', () => appWindow.minimize());
@@ -31,6 +41,27 @@ window.addEventListener("DOMContentLoaded", async () => {
     continueEl.addEventListener('click', async () => {
         await invoke("set_read_page_continue", { storyIndex: story.index });
         window.location.href = "/chapter";
+    });
+    if (story.followed) {
+        followEl.classList.add("active-button")
+    }
+    if (story.finished) {
+        finishedEl.classList.add("active-button")
+    }
+    if (story.read_later) {
+        laterEl.classList.add("active-button")
+    }
+    finishedEl.addEventListener('click', async () => {
+        await invoke("change_finished", { storyIndex: story.index });
+        change_active(finishedEl);
+    });
+    followEl.addEventListener('click', async () => {
+        await invoke("change_followed", { storyIndex: story.index });
+        change_active(followEl);
+    });
+    laterEl.addEventListener('click', async () => {
+        await invoke("change_read_later", { storyIndex: story.index });
+        change_active(laterEl);
     });
     let chapters = await invoke("get_chapters", { storyIndex: story.index });
     chapters.forEach(chapter => {

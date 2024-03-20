@@ -286,3 +286,20 @@ body {
 .chapter-container > div:first-child {
   margin-top: 1em;
 }
+
+.story-tag-button-container {
+  display: grid;
+  width: 75%;
+  margin-left: 12.5%;
+  margin-right: 12.5%;
+  grid-template-columns: 30% 30% 30%;
+  column-gap: 5%;
+  margin-bottom: 10px;
+}
+
+button.active-button {
+  background-color: #0f0f1898;
+}
+button:active.active-button {
+  background-color: #0f0f1869;
+}

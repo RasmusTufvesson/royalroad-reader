@@ -142,6 +142,9 @@ struct StoryInfoResponse {
     author: String,
     description: String,
     index: usize,
+    followed: bool,
+    read_later: bool,
+    finished: bool,
 }
 
 #[derive(serde::Serialize, Clone)]
@@ -151,13 +154,17 @@ struct StoryPage {
 
 #[tauri::command]
 fn get_story_info(state: tauri::State<Arc<Mutex<AppState>>>) -> StoryInfoResponse {
-    let index = state.lock().unwrap().story_page.story_index;
-    let story = &state.lock().unwrap().manager.stories[index];
+    let state = state.lock().unwrap();
+    let index = state.story_page.story_index;
+    let story = &state.manager.stories[index];
     StoryInfoResponse {
         title: story.title.clone(),
         author: story.author.clone(),
         description: story.description.clone(),
         index,
+        followed: state.manager.follows.contains(&index),
+        read_later: state.manager.read_later.contains(&index),
+        finished: state.manager.finished.contains(&index),
     }
 }
 
@@ -193,6 +200,51 @@ fn get_chapters(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) -
     }).collect()
 }
 
+#[tauri::command]
+fn get_last_read_chapter(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) -> ChapterTitleResponse {
+    let story = &state.lock().unwrap().manager.stories[story_index];
+    ChapterTitleResponse {
+        title: story.chapters[story.progress].name.clone(),
+        index: story.progress,
+    }
+}
+
+#[tauri::command]
+fn change_followed(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) {
+    let mut state = state.lock().unwrap();
+    for (index, story) in state.manager.follows.iter().enumerate() {
+        if story == &story_index {
+            state.manager.follows.remove(index);
+            return;
+        }
+    }
+    state.manager.follows.push(story_index);
+}
+
+#[tauri::command]
+fn change_read_later(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) {
+    let mut state = state.lock().unwrap();
+    for (index, story) in state.manager.read_later.iter().enumerate() {
+        if story == &story_index {
+            state.manager.read_later.remove(index);
+            return;
+        }
+    }
+    state.manager.read_later.push(story_index);
+}
+
+#[tauri::command]
+fn change_finished(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) {
+    let mut state = state.lock().unwrap();
+    for (index, story) in state.manager.finished.iter().enumerate() {
+        if story == &story_index {
+            state.manager.finished.remove(index);
+            return;
+        }
+    }
+    state.manager.finished.push(story_index);
+}
+
 fn main() {
     let state = Arc::new(Mutex::new(AppState { manager: royalroad::StoryManager::load_or_new(SAVE_FILE), read_page: ReadPage { story_index: 0, chapter_index: 0 }, story_page: StoryPage { story_index: 0 } }));
     tauri::Builder::default()
@@ -217,6 +269,10 @@ fn main() {
             get_follows,
             get_read_later,
             get_finished,
+            get_last_read_chapter,
+            change_followed,
+            change_read_later,
+            change_finished,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
