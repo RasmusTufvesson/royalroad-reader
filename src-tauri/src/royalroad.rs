@@ -23,17 +23,16 @@ impl ChapterContent {
                 r#"(?:<div class="portlet solid author-note-portlet">[\t\n ]*<div class="portlet-title">[\t\n ]*<div class="caption">[\t\n ]*<i class="fa fa-sticky-note"><\/i>[\t\n ]*<span class="caption-subject bold uppercase">.*?<\/span>[\t\n ]*<\/div>[\t\n ]*<\/div>[\t\n ]*<div class="portlet-body author-note">(.*?)<\/div>[\t\n ]*<\/div>[\t\n ]*)?<div class="chapter-inner chapter-content">([\s\S]*?)<\/div>[\t\n ]*<div class="portlet light t-center-3" style="padding-top: 5px !important;position: relative">[\s\S]*?(?:<div class="portlet solid author-note-portlet">[\t\n ]*<div class="portlet-title">[\t\n ]*<div class="caption">[\t\n ]*<i class="fa fa-sticky-note"><\/i>[\t\n ]*<span class="caption-subject bold uppercase">.*?<\/span>[\t\n ]*<\/div>[\t\n ]*<\/div>[\t\n ]*<div class="portlet-body author-note">(.*?)<\/div>[\t\n ]*<\/div>)?[\t\n ]*<hr \/>"#
             ).unwrap();
             static ref HIDDEN_CLASS_REGEX: Regex = Regex::new(
-                r#"<style>[\t\n ]*\.(.*?){[\t\n ]*display: none;[\t\n ]*speak: never;[\t\n ]*}[\t\n ]*<\/style>"#
+                r#"<style>[\t\n ]*\.(.*?)\{[\t\n ]*display: none;[\t\n ]*speak: never;[\t\n ]*\}[\t\n ]*<\/style>"#
             ).unwrap();
         }
         let caps = CONTENT_REGEX.captures(&content).unwrap();
         let start_note = caps.get(1).and_then(|x| Some(x.as_str().to_string()));
         let end_note = caps.get(3).and_then(|x| Some(x.as_str().to_string()));
         let chap_content = caps.get(2).unwrap().as_str();
-        let hidden = HIDDEN_CLASS_REGEX.captures(&content);
-        if let Some(hidden) = hidden {
+        if let Some(hidden) = HIDDEN_CLASS_REGEX.captures(&content) {
             let replace_regex = Regex::new(
-                &format!(r#"<p class="{}" data-original-margin="">[\w\W]*<\/p>"#, hidden.get(0).unwrap().as_str())
+                &format!(r#"<p class="{}"[\w\W]*?<\/p>"#, hidden.get(1).unwrap().as_str())
             ).unwrap();
             Self {
                 start_note,
