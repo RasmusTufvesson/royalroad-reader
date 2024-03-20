@@ -10,6 +10,7 @@ let continueEl;
 let followEl;
 let finishedEl;
 let laterEl;
+let removeEl;
 
 function change_active(element) {
     element.classList.toggle("active-button")
@@ -25,6 +26,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     followEl = document.querySelector("#follow-button");
     finishedEl = document.querySelector("#finished-button");
     laterEl = document.querySelector("#read-later-button");
+    removeEl = document.querySelector("#remove-button");
     document
         .getElementById('titlebar-minimize')
         .addEventListener('click', () => appWindow.minimize());
@@ -62,6 +64,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     laterEl.addEventListener('click', async () => {
         await invoke("change_read_later", { storyIndex: story.index });
         change_active(laterEl);
+    });
+    removeEl.addEventListener('click', async () => {
+        await invoke("remove_story", { storyIndex: story.index });
+        window.location = '/';
     });
     let chapters = await invoke("get_chapters", { storyIndex: story.index });
     chapters.forEach(chapter => {

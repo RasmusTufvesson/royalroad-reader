@@ -17,6 +17,30 @@ fn add_story(state: tauri::State<Arc<Mutex<AppState>>>, url: &str) {
     let _ = state.lock().unwrap().manager.add_story_from_url(url.to_string());
 }
 
+#[tauri::command]
+fn remove_story(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) {
+    let manager = &mut state.lock().unwrap().manager;
+    manager.stories.remove(story_index);
+    for (index, story) in manager.follows.iter().enumerate() {
+        if story == &story_index {
+            manager.follows.remove(index);
+            break;
+        }
+    }
+    for (index, story) in manager.read_later.iter().enumerate() {
+        if story == &story_index {
+            manager.read_later.remove(index);
+            break;
+        }
+    }
+    for (index, story) in manager.finished.iter().enumerate() {
+        if story == &story_index {
+            manager.finished.remove(index);
+            break;
+        }
+    }
+}
+
 #[derive(serde::Serialize)]
 struct ChapterResponse {
     content: String,
@@ -273,6 +297,7 @@ fn main() {
             change_followed,
             change_read_later,
             change_finished,
+            remove_story,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")

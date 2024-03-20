@@ -90,10 +90,10 @@ button {
 button:active {
   background-color: #0f0f0f69;
 }
-button:disabled {
+button:disabled, button.red-button {
   background-color: #130606;
 }
-button:disabled:hover {
+button:disabled:hover, button.red-button:hover {
   border-color: #9d3131;
 }
 
