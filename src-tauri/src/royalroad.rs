@@ -1,8 +1,11 @@
+use std::{fs::File, io::{Read, Write}};
 use reqwest;
 use lazy_static::lazy_static;
 use regex::Regex;
+use serde::{Deserialize, Serialize};
+use bincode::{serialize, deserialize};
 
-#[derive(Debug, PartialEq)]
+#[derive(PartialEq, Deserialize, Serialize)]
 pub struct ChapterContent {
     pub start_note: Option<String>,
     pub chapter_content: String,
@@ -17,7 +20,7 @@ impl ChapterContent {
             .expect("Couldnt get text from page");
         lazy_static! {
             static ref CONTENT_REGEX: Regex = Regex::new(
-                r#"(?:<div class="portlet solid author-note-portlet">[\t\n ]*<div class="portlet-title">[\t\n ]*<div class="caption">[\t\n ]*<i class="fa fa-sticky-note"><\/i>[\t\n ]*<span class="caption-subject bold uppercase">.*?<\/span>[\t\n ]*<\/div>[\t\n ]*<\/div>[\t\n ]*<div class="portlet-body author-note">(.*?)<\/div>[\t\n ]*<\/div>[\t\n ]*)?<div class="chapter-inner chapter-content">([\s\S]*?)<\/div>[\t\n ]*<div class="portlet light t-center-2" style="padding-top: 5px !important;position: relative">[\s\S]*?(?:<div class="portlet solid author-note-portlet">[\t\n ]*<div class="portlet-title">[\t\n ]*<div class="caption">[\t\n ]*<i class="fa fa-sticky-note"><\/i>[\t\n ]*<span class="caption-subject bold uppercase">.*?<\/span>[\t\n ]*<\/div>[\t\n ]*<\/div>[\t\n ]*<div class="portlet-body author-note">(.*?)<\/div>[\t\n ]*<\/div>)?[\t\n ]*<hr \/>"#
+                r#"(?:<div class="portlet solid author-note-portlet">[\t\n ]*<div class="portlet-title">[\t\n ]*<div class="caption">[\t\n ]*<i class="fa fa-sticky-note"><\/i>[\t\n ]*<span class="caption-subject bold uppercase">.*?<\/span>[\t\n ]*<\/div>[\t\n ]*<\/div>[\t\n ]*<div class="portlet-body author-note">(.*?)<\/div>[\t\n ]*<\/div>[\t\n ]*)?<div class="chapter-inner chapter-content">([\s\S]*?)<\/div>[\t\n ]*<div class="portlet light t-center-3" style="padding-top: 5px !important;position: relative">[\s\S]*?(?:<div class="portlet solid author-note-portlet">[\t\n ]*<div class="portlet-title">[\t\n ]*<div class="caption">[\t\n ]*<i class="fa fa-sticky-note"><\/i>[\t\n ]*<span class="caption-subject bold uppercase">.*?<\/span>[\t\n ]*<\/div>[\t\n ]*<\/div>[\t\n ]*<div class="portlet-body author-note">(.*?)<\/div>[\t\n ]*<\/div>)?[\t\n ]*<hr \/>"#
             ).unwrap();
         }
         let caps = CONTENT_REGEX.captures(&content).unwrap();
@@ -32,7 +35,7 @@ impl ChapterContent {
     }
 }
 
-#[derive(Debug)]
+#[derive(Deserialize, Serialize)]
 pub struct Chapter {
     pub content: Option<ChapterContent>,
     pub name: String,
@@ -52,7 +55,7 @@ impl Chapter {
     }
 }
 
-#[derive(Debug)]
+#[derive(Deserialize, Serialize)]
 pub struct Story {
     pub title: String,
     pub id: u32,
@@ -104,6 +107,7 @@ impl Story {
     }
 }
 
+#[derive(Deserialize, Serialize)]
 pub struct StoryManager {
     pub stories: Vec<Story>,
     pub follows: Vec<usize>,
@@ -129,5 +133,25 @@ impl StoryManager {
         }
         self.stories.push(Story::from_page_url(url));
         Ok(())
+    }
+    
+    pub fn save(&self, file: &str) {
+        let serialized_data = serialize(self).unwrap();
+        let mut file = File::create(file).unwrap();
+        file.write_all(&serialized_data).unwrap();
+    }
+
+    pub fn load_or_new(file: &str) -> Self {
+        match File::open(file) {
+            Ok(mut file) => {
+                let mut serialized_data = Vec::new();
+                file.read_to_end(&mut serialized_data).unwrap();
+                let data: Self = deserialize(&serialized_data).unwrap();
+                data
+            }
+            Err(_) => {
+                Self::new()
+            }
+        }
     }
 }

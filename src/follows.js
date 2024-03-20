@@ -16,7 +16,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     document
         .getElementById('titlebar-close')
         .addEventListener('click', () => appWindow.close());
-    let stories = await invoke("get_stories");
+    let stories = await invoke("get_follows");
     stories.forEach(story => {
         let el = document.createElement("div");
         let div = document.createElement("div");

@@ -5,7 +5,6 @@ let storyEl;
 let windowEl;
 
 window.addEventListener("DOMContentLoaded", async () => {
-    // await invoke("add_story", { url: "https://www.royalroad.com/fiction/15935/there-is-no-epic-loot-here-only-puns" });
     windowEl = document.querySelector("#window");
     storyEl = document.querySelector("#stories-container");
     document
@@ -17,7 +16,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     document
         .getElementById('titlebar-close')
         .addEventListener('click', () => appWindow.close());
-    let stories = await invoke("get_follows");
+    let stories = await invoke("get_read_later");
     stories.forEach(story => {
         let el = document.createElement("div");
         let div = document.createElement("div");

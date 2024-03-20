@@ -1,8 +1,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use tauri::Manager;
 mod royalroad;
+
+const SAVE_FILE: &'static str = "save.bin";
 
 struct AppState {
     manager: royalroad::StoryManager,
@@ -10,13 +12,8 @@ struct AppState {
     story_page: StoryPage,
 }
 
-// #[tauri::command]
-// fn greet(name: &str) -> String {
-//     format!("Hello, {}! You've been greeted from Rust!", name)
-// }
-
 #[tauri::command]
-fn add_story(state: tauri::State<Mutex<AppState>>, url: &str) {
+fn add_story(state: tauri::State<Arc<Mutex<AppState>>>, url: &str) {
     let _ = state.lock().unwrap().manager.add_story_from_url(url.to_string());
 }
 
@@ -32,7 +29,7 @@ struct ChapterResponse {
 }
 
 #[tauri::command]
-fn get_chapter(state: tauri::State<Mutex<AppState>>, story_index: usize, chapter_index: usize) -> ChapterResponse {
+fn get_chapter(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize, chapter_index: usize) -> ChapterResponse {
     state.lock().unwrap().manager.stories[story_index].chapters[chapter_index].load_content();
     let state = state.lock().unwrap();
     let story = &state.manager.stories[story_index];
@@ -57,7 +54,7 @@ struct StoryResponse {
 }
 
 #[tauri::command]
-fn get_stories(state: tauri::State<Mutex<AppState>>) -> Vec<StoryResponse> {
+fn get_stories(state: tauri::State<Arc<Mutex<AppState>>>) -> Vec<StoryResponse> {
     state.lock().unwrap().manager.stories.iter().enumerate().map(|(index, story)| {
         StoryResponse {
             title: story.title.clone(),
@@ -67,6 +64,51 @@ fn get_stories(state: tauri::State<Mutex<AppState>>) -> Vec<StoryResponse> {
     }).collect()
 }
 
+#[tauri::command]
+fn get_follows(state: tauri::State<Arc<Mutex<AppState>>>) -> Vec<StoryResponse> {
+    let state = state.lock().unwrap();
+    let mut stories = vec![];
+    for index in &state.manager.follows {
+        let story = &state.manager.stories[*index];
+        stories.push(StoryResponse {
+            title: story.title.clone(),
+            author: story.author.clone(),
+            index: *index,
+        });
+    }
+    stories
+}
+
+#[tauri::command]
+fn get_read_later(state: tauri::State<Arc<Mutex<AppState>>>) -> Vec<StoryResponse> {
+    let state = state.lock().unwrap();
+    let mut stories = vec![];
+    for index in &state.manager.read_later {
+        let story = &state.manager.stories[*index];
+        stories.push(StoryResponse {
+            title: story.title.clone(),
+            author: story.author.clone(),
+            index: *index,
+        });
+    }
+    stories
+}
+
+#[tauri::command]
+fn get_finished(state: tauri::State<Arc<Mutex<AppState>>>) -> Vec<StoryResponse> {
+    let state = state.lock().unwrap();
+    let mut stories = vec![];
+    for index in &state.manager.finished {
+        let story = &state.manager.stories[*index];
+        stories.push(StoryResponse {
+            title: story.title.clone(),
+            author: story.author.clone(),
+            index: *index,
+        });
+    }
+    stories
+}
+
 #[derive(serde::Serialize, Clone)]
 struct ReadPage {
     story_index: usize,
@@ -74,14 +116,14 @@ struct ReadPage {
 }
 
 #[tauri::command]
-fn set_read_page(state: tauri::State<Mutex<AppState>>, story_index: usize, chapter_index: usize) {
+fn set_read_page(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize, chapter_index: usize) {
     let page = &mut state.lock().unwrap().read_page;
     page.story_index = story_index;
     page.chapter_index = chapter_index;
 }
 
 #[tauri::command]
-fn set_read_page_continue(state: tauri::State<Mutex<AppState>>, story_index: usize) {
+fn set_read_page_continue(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) {
     let st = &mut state.lock().unwrap();
     let chapter_index = st.manager.stories[story_index].progress;
     let page = &mut st.read_page;
@@ -90,7 +132,7 @@ fn set_read_page_continue(state: tauri::State<Mutex<AppState>>, story_index: usi
 }
 
 #[tauri::command]
-fn get_read_page(state: tauri::State<Mutex<AppState>>) -> ReadPage {
+fn get_read_page(state: tauri::State<Arc<Mutex<AppState>>>) -> ReadPage {
     state.lock().unwrap().read_page.clone()
 }
 
@@ -108,7 +150,7 @@ struct StoryPage {
 }
 
 #[tauri::command]
-fn get_story_info(state: tauri::State<Mutex<AppState>>) -> StoryInfoResponse {
+fn get_story_info(state: tauri::State<Arc<Mutex<AppState>>>) -> StoryInfoResponse {
     let index = state.lock().unwrap().story_page.story_index;
     let story = &state.lock().unwrap().manager.stories[index];
     StoryInfoResponse {
@@ -120,18 +162,18 @@ fn get_story_info(state: tauri::State<Mutex<AppState>>) -> StoryInfoResponse {
 }
 
 #[tauri::command]
-fn set_story_page(state: tauri::State<Mutex<AppState>>, story_index: usize) {
+fn set_story_page(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) {
     let page = &mut state.lock().unwrap().story_page;
     page.story_index = story_index;
 }
 
 #[tauri::command]
-fn set_story_progress(state: tauri::State<Mutex<AppState>>, story_index: usize, progress: usize) {
+fn set_story_progress(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize, progress: usize) {
     state.lock().unwrap().manager.stories[story_index].progress = progress;
 }
 
 #[tauri::command]
-fn get_story_progress(state: tauri::State<Mutex<AppState>>, story_index: usize) -> usize {
+fn get_story_progress(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) -> usize {
     state.lock().unwrap().manager.stories[story_index].progress
 }
 
@@ -142,7 +184,7 @@ struct ChapterTitleResponse {
 }
 
 #[tauri::command]
-fn get_chapters(state: tauri::State<Mutex<AppState>>, story_index: usize) -> Vec<ChapterTitleResponse> {
+fn get_chapters(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) -> Vec<ChapterTitleResponse> {
     state.lock().unwrap().manager.stories[story_index].chapters.iter().enumerate().map(|(index, chapter)| {
         ChapterTitleResponse {
             title: chapter.name.clone(),
@@ -152,13 +194,14 @@ fn get_chapters(state: tauri::State<Mutex<AppState>>, story_index: usize) -> Vec
 }
 
 fn main() {
+    let state = Arc::new(Mutex::new(AppState { manager: royalroad::StoryManager::load_or_new(SAVE_FILE), read_page: ReadPage { story_index: 0, chapter_index: 0 }, story_page: StoryPage { story_index: 0 } }));
     tauri::Builder::default()
         .setup(|app| {
             let main_window = app.get_window("main").unwrap();
             main_window.center()?;
             Ok(())
         })
-        .manage(Mutex::new(AppState { manager: royalroad::StoryManager::new(), read_page: ReadPage { story_index: 0, chapter_index: 0 }, story_page: StoryPage { story_index: 0 } }))
+        .manage(state.clone())
         .invoke_handler(tauri::generate_handler![
             add_story,
             get_chapter,
@@ -171,7 +214,16 @@ fn main() {
             set_story_progress,
             get_story_progress,
             get_chapters,
+            get_follows,
+            get_read_later,
+            get_finished,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while running tauri application")
+        .run(move |_app_handle, event| match event {
+            tauri::RunEvent::ExitRequested { .. } => {
+                state.lock().unwrap().manager.save(SAVE_FILE);
+            }
+            _ => {}
+        });
 }

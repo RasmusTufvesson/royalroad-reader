@@ -1,5 +1,6 @@
 /src-tauri/target
 /testing
+/src-tauri/save.bin
 
 # Logs
 logs

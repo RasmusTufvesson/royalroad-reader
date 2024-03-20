@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Royal Road reader</title>
     <script type="module" src="/common.js" defer></script>
-    <script type="module" src="/follows.js" defer></script>
+    <script type="module" src="/all.js" defer></script>
   </head>
 
   <body>
     <div class="window" id="window" style="height: 570px; width: 800px; display: none;">
       <div class="window-inner">
-        <h1>Follows</h1>
+        <h1>All stories</h1>
         <div id="stories-container" class="container stories-container">
           
         </div>
@@ -22,7 +22,7 @@
       <div class="titlebar-text-button" id="titlebar-home" onclick="window.location = '/'">
         <p><strong>Home</strong></p>
       </div>
-      <div class="titlebar-text-button" id="titlebar-follows">
+      <div class="titlebar-text-button" id="titlebar-follows" onclick="window.location = '/follows'">
         <p><strong>Follows</strong></p>
       </div>
       <div class="titlebar-text-button" id="titlebar-home" onclick="window.location = '/later'">
@@ -31,7 +31,7 @@
       <div class="titlebar-text-button" id="titlebar-follows" onclick="window.location = '/finished'">
         <p><strong>Finished</strong></p>
       </div>
-      <div class="titlebar-text-button" id="titlebar-follows" onclick="window.location = '/all'">
+      <div class="titlebar-text-button" id="titlebar-follows">
         <p><strong>All stories</strong></p>
       </div>
     </div>
