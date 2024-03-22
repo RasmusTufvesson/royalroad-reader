@@ -112,15 +112,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   windowEl = document.querySelector("#window");
   skipEl = document.querySelector("#set-progress-skip-container");
   reverseEl = document.querySelector("#set-progress-reverse-container");
-  document
-    .getElementById('titlebar-minimize')
-    .addEventListener('click', () => appWindow.minimize());
-  document
-    .getElementById('titlebar-maximize')
-    .addEventListener('click', () => appWindow.toggleMaximize());
-  document
-    .getElementById('titlebar-close')
-    .addEventListener('click', () => appWindow.close());
   const page = await invoke("get_read_page")
   storyIndex = page.story_index
   chapterIndex = page.chapter_index

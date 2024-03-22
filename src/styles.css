@@ -308,3 +308,12 @@ button:active.active-button {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+
+.full-width {
+  width: 100%;
+}
+
+.small-margin {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

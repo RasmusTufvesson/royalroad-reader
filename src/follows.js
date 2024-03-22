@@ -7,15 +7,6 @@ let windowEl;
 window.addEventListener("DOMContentLoaded", async () => {
     windowEl = document.querySelector("#window");
     storyEl = document.querySelector("#stories-container");
-    document
-        .getElementById('titlebar-minimize')
-        .addEventListener('click', () => appWindow.minimize());
-    document
-        .getElementById('titlebar-maximize')
-        .addEventListener('click', () => appWindow.toggleMaximize());
-    document
-        .getElementById('titlebar-close')
-        .addEventListener('click', () => appWindow.close());
     let stories = await invoke("get_follows");
     stories.forEach(story => {
         let el = document.createElement("div");

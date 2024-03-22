@@ -119,6 +119,33 @@ impl Story {
             progress: 0,
         }
     }
+
+    pub fn update(&mut self) {
+        let content = reqwest::blocking::get(&self.page_url)
+            .expect("Coundnt get page")
+            .text()
+            .expect("Couldnt get text from page");
+        lazy_static! {
+            static ref CHAPTER_REGEX: Regex = Regex::new(
+                r#"<tr style="cursor: pointer" data-url="(.*?)" data-volume-id=".*?" class="chapter-row">[\t\n ]*<td>[\t\n ]*<a href=".*?">[\t\n ]*(.*?)[\t\n ]*<\/a>[\t\n ]*<\/td>[\t\n ]*<td data-content="([0-9]*?)" class="text-right">[\t\n ]*<a href=".*?" data-content=".*?">[\t\n ]*<time unixtime="[0-9]*" title=".*?" datetime=".*?" format="agoshort">.*?<\/time> ago[\t\n ]*<\/a>[\t\n ]*<\/td>[\t\n ]*<\/tr>"#
+            ).unwrap();
+            static ref CHAPTER_ID_REGEX: Regex = Regex::new(
+                r#"fiction/[0-9]*/[^/]*/chapter/([0-9]*)/[^/]*"#
+            ).unwrap();
+        }
+        for cap in CHAPTER_REGEX.captures_iter(&content) {
+            let name = cap.get(2).unwrap().as_str().to_string();
+            if !self.chapters.iter().any(|chapter| chapter.name == name) {
+                self.chapters.push(Chapter::from_name_and_url(name, "https://www.royalroad.com".to_string() + cap.get(1).unwrap().as_str(), CHAPTER_ID_REGEX.captures(cap.get(1).unwrap().as_str()).unwrap().get(1).unwrap().as_str().parse().unwrap()));
+            }
+        }
+    }
+
+    pub fn download_all(&mut self) {
+        for chapter in &mut self.chapters {
+            chapter.load_content();
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize)]
@@ -166,6 +193,12 @@ impl StoryManager {
             Err(_) => {
                 Self::new()
             }
+        }
+    }
+
+    pub fn update_all(&mut self) {
+        for story in &mut self.stories {
+            story.update();
         }
     }
 }

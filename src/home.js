@@ -3,19 +3,15 @@ const { appWindow } = window.__TAURI__.window;
 
 let storyEl;
 let windowEl;
+let updateEl;
 
 window.addEventListener("DOMContentLoaded", async () => {
     windowEl = document.querySelector("#window");
     storyEl = document.querySelector("#stories-container");
-    document
-        .getElementById('titlebar-minimize')
-        .addEventListener('click', () => appWindow.minimize());
-    document
-        .getElementById('titlebar-maximize')
-        .addEventListener('click', () => appWindow.toggleMaximize());
-    document
-        .getElementById('titlebar-close')
-        .addEventListener('click', () => appWindow.close());
+    updateEl = document.querySelector("#update");
+    updateEl.addEventListener('click', async () => {
+        await invoke("update_stories");
+    });
     let stories = await invoke("get_follows");
     stories.forEach(story => {
         let el = document.createElement("div");

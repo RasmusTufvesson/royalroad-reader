@@ -11,9 +11,27 @@ let followEl;
 let finishedEl;
 let laterEl;
 let removeEl;
+let updateEl;
+let downloadEl;
 
 function change_active(element) {
     element.classList.toggle("active-button")
+}
+
+async function load_chapters(index) {
+    chaptersEl.innerHTML = '';
+    let chapters = await invoke("get_chapters", { storyIndex: index });
+    chapters.forEach(chapter => {
+        let el = document.createElement("p");
+        el.innerHTML = "<strong>" + chapter.title + "</strong>";
+        el.classList.add("chapter")
+        chaptersEl.appendChild(el);
+
+        el.addEventListener('click', async () => {
+            await invoke("set_read_page", { storyIndex: index, chapterIndex: chapter.index });
+            window.location.href = "/chapter";
+        });
+    });
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -27,15 +45,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     finishedEl = document.querySelector("#finished-button");
     laterEl = document.querySelector("#read-later-button");
     removeEl = document.querySelector("#remove-button");
-    document
-        .getElementById('titlebar-minimize')
-        .addEventListener('click', () => appWindow.minimize());
-    document
-        .getElementById('titlebar-maximize')
-        .addEventListener('click', () => appWindow.toggleMaximize());
-    document
-        .getElementById('titlebar-close')
-        .addEventListener('click', () => appWindow.close());
+    updateEl = document.querySelector("#update");
+    downloadEl = document.querySelector("#download");
     let story = await invoke("get_story_info");
     titleEl.innerHTML = "<strong>" + story.title + "</strong>";
     authorEl.innerHTML = "<small>By " + story.author + "</small>";
@@ -69,17 +80,13 @@ window.addEventListener("DOMContentLoaded", async () => {
         await invoke("remove_story", { storyIndex: story.index });
         window.location = '/';
     });
-    let chapters = await invoke("get_chapters", { storyIndex: story.index });
-    chapters.forEach(chapter => {
-        let el = document.createElement("p");
-        el.innerHTML = "<strong>" + chapter.title + "</strong>";
-        el.classList.add("chapter")
-        chaptersEl.appendChild(el);
-
-        el.addEventListener('click', async () => {
-            await invoke("set_read_page", { storyIndex: story.index, chapterIndex: chapter.index });
-            window.location.href = "/chapter";
-        });
+    updateEl.addEventListener('click', async () => {
+        await invoke("update_story", { storyIndex: story.index });
+        await load_chapters(story.index);
     });
+    downloadEl.addEventListener('click', async () => {
+        await invoke("download_story", { storyIndex: story.index });
+    });
+    await load_chapters(story.index);
     windowEl.style.display = null;
 });

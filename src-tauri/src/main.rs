@@ -269,6 +269,21 @@ fn change_finished(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize
     state.manager.finished.push(story_index);
 }
 
+#[tauri::command]
+fn update_stories(state: tauri::State<Arc<Mutex<AppState>>>) {
+    state.lock().unwrap().manager.update_all();
+}
+
+#[tauri::command]
+fn update_story(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) {
+    state.lock().unwrap().manager.stories[story_index].update();
+}
+
+#[tauri::command]
+fn download_story(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) {
+    state.lock().unwrap().manager.stories[story_index].download_all();
+}
+
 fn main() {
     let state = Arc::new(Mutex::new(AppState { manager: royalroad::StoryManager::load_or_new(SAVE_FILE), read_page: ReadPage { story_index: 0, chapter_index: 0 }, story_page: StoryPage { story_index: 0 } }));
     tauri::Builder::default()
@@ -298,6 +313,9 @@ fn main() {
             change_read_later,
             change_finished,
             remove_story,
+            update_stories,
+            update_story,
+            download_story,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
