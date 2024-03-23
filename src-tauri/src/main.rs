@@ -75,6 +75,7 @@ struct StoryResponse {
     title: String,
     author: String,
     index: usize,
+    last_read: String,
 }
 
 #[tauri::command]
@@ -84,6 +85,7 @@ fn get_stories(state: tauri::State<Arc<Mutex<AppState>>>) -> Vec<StoryResponse> 
             title: story.title.clone(),
             author: story.author.clone(),
             index,
+            last_read: story.chapters[story.progress].name.clone(),
         }
     }).collect()
 }
@@ -98,6 +100,7 @@ fn get_follows(state: tauri::State<Arc<Mutex<AppState>>>) -> Vec<StoryResponse> 
             title: story.title.clone(),
             author: story.author.clone(),
             index: *index,
+            last_read: story.chapters[story.progress].name.clone(),
         });
     }
     stories
@@ -113,6 +116,7 @@ fn get_read_later(state: tauri::State<Arc<Mutex<AppState>>>) -> Vec<StoryRespons
             title: story.title.clone(),
             author: story.author.clone(),
             index: *index,
+            last_read: story.chapters[story.progress].name.clone(),
         });
     }
     stories
@@ -128,6 +132,7 @@ fn get_finished(state: tauri::State<Arc<Mutex<AppState>>>) -> Vec<StoryResponse>
             title: story.title.clone(),
             author: story.author.clone(),
             index: *index,
+            last_read: story.chapters[story.progress].name.clone(),
         });
     }
     stories
@@ -149,7 +154,10 @@ fn set_read_page(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize, 
 #[tauri::command]
 fn set_read_page_continue(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) {
     let st = &mut state.lock().unwrap();
-    let chapter_index = st.manager.stories[story_index].progress;
+    let mut chapter_index = st.manager.stories[story_index].progress;
+    if chapter_index != st.manager.stories[story_index].chapters.len() - 1 {
+        chapter_index += 1;
+    }
     let page = &mut st.read_page;
     page.story_index = story_index;
     page.chapter_index = chapter_index;

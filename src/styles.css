@@ -213,13 +213,28 @@ body {
 
 .stories-container > div > div:first-child {
   flex-grow: 1;
+  width: 100%;
 }
 
 .stories-container > div > div > h2, .title {
   margin-bottom: 0px;
 }
-.stories-container > div > div > p, .author {
+.stories-container > div > div > div, .author {
   margin-top: 0px;
+  height: 20px;
+  margin-bottom: 1em;
+}
+.stories-container > div > div > div {
+  width: calc(100% - 1em);
+}
+.stories-container > div > div > div > * {
+  margin: 0;
+}
+.stories-container > div > div > div > :first-child {
+  float: left;
+}
+.stories-container > div > div > div > :last-child {
+  float: right;
 }
 
 .inner-container {

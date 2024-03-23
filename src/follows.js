@@ -14,9 +14,14 @@ window.addEventListener("DOMContentLoaded", async () => {
         let title = document.createElement("h2");
         title.innerHTML = "<strong>" + story.title + "</strong>";
         div.appendChild(title);
+        let smallDiv = document.createElement("div");
         let author = document.createElement("p");
         author.innerHTML = "<small>By " + story.author + "</small>";
-        div.appendChild(author);
+        smallDiv.appendChild(author);
+        let lastRead = document.createElement("p");
+        lastRead.innerHTML = "<small>" + story.last_read + "</small>";
+        smallDiv.appendChild(lastRead);
+        div.appendChild(smallDiv);
         el.appendChild(div);
         el.classList.add("inner-container");
         let readDiv = document.createElement("div");
