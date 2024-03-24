@@ -12,7 +12,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     updateEl.addEventListener('click', async () => {
         await invoke("update_stories");
     });
-    let stories = await invoke("get_follows");
+    let stories = await invoke("get_unread_follows");
     stories.forEach(story => {
         let el = document.createElement("div");
         let div = document.createElement("div");

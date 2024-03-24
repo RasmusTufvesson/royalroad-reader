@@ -60,17 +60,9 @@ window.prevPage = async function() {
   } else if (progress_diff > 1) {
     reverseEl.classList.add("empty")
     skipEl.classList.remove("empty")
-    skipEl.addEventListener('click', async () => {
-      await set_progress();
-      skipEl.classList.add("empty")
-    });
   } else if (progress_diff < 0) {
     skipEl.classList.add("empty")
     reverseEl.classList.remove("empty")
-    reverseEl.addEventListener('click', async () => {
-      await set_progress();
-      reverseEl.classList.add("empty")
-    });
   }
   await loadPage();
   windowEl.scrollTo(0, 0);
@@ -119,17 +111,17 @@ window.addEventListener("DOMContentLoaded", async () => {
   let progress_diff = chapterIndex - storedProgress;
   if (progress_diff > 1) {
     skipEl.classList.remove("empty")
-    skipEl.addEventListener('click', async () => {
-      await set_progress();
-      skipEl.classList.add("empty")
-    });
   } else if (progress_diff < 0) {
     reverseEl.classList.remove("empty")
-    reverseEl.addEventListener('click', async () => {
-      await set_progress();
-      reverseEl.classList.add("empty")
-    });
   }
+  reverseEl.addEventListener('click', async () => {
+    await set_progress();
+    reverseEl.classList.add("empty")
+  });
+  skipEl.addEventListener('click', async () => {
+    await set_progress();
+    skipEl.classList.add("empty")
+  });
   await loadPage();
   windowEl.style.display = null;
 });

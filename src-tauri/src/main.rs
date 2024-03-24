@@ -93,15 +93,44 @@ fn get_stories(state: tauri::State<Arc<Mutex<AppState>>>) -> Vec<StoryResponse> 
 #[tauri::command]
 fn get_follows(state: tauri::State<Arc<Mutex<AppState>>>) -> Vec<StoryResponse> {
     let state = state.lock().unwrap();
+    let mut stories_unread = vec![];
+    let mut stories_read = vec![];
+    for index in &state.manager.follows {
+        let story = &state.manager.stories[*index];
+        if story.progress != story.chapters.len() - 1 {
+            stories_unread.push(StoryResponse {
+                title: story.title.clone(),
+                author: story.author.clone(),
+                index: *index,
+                last_read: story.chapters[story.progress].name.clone(),
+            });
+        } else {
+            stories_read.push(StoryResponse {
+                title: story.title.clone(),
+                author: story.author.clone(),
+                index: *index,
+                last_read: story.chapters[story.progress].name.clone(),
+            });
+        }
+    }
+    stories_unread.append(&mut stories_read);
+    stories_unread
+}
+
+#[tauri::command]
+fn get_unread_follows(state: tauri::State<Arc<Mutex<AppState>>>) -> Vec<StoryResponse> {
+    let state = state.lock().unwrap();
     let mut stories = vec![];
     for index in &state.manager.follows {
         let story = &state.manager.stories[*index];
-        stories.push(StoryResponse {
-            title: story.title.clone(),
-            author: story.author.clone(),
-            index: *index,
-            last_read: story.chapters[story.progress].name.clone(),
-        });
+        if story.progress != story.chapters.len() - 1 {
+            stories.push(StoryResponse {
+                title: story.title.clone(),
+                author: story.author.clone(),
+                index: *index,
+                last_read: story.chapters[story.progress].name.clone(),
+            });
+        }
     }
     stories
 }
@@ -157,6 +186,7 @@ fn set_read_page_continue(state: tauri::State<Arc<Mutex<AppState>>>, story_index
     let mut chapter_index = st.manager.stories[story_index].progress;
     if chapter_index != st.manager.stories[story_index].chapters.len() - 1 {
         chapter_index += 1;
+        st.manager.stories[story_index].progress = chapter_index;
     }
     let page = &mut st.read_page;
     page.story_index = story_index;
@@ -324,6 +354,7 @@ fn main() {
             update_stories,
             update_story,
             download_story,
+            get_unread_follows,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
