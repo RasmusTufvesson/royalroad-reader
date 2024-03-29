@@ -5,13 +5,8 @@ let storyEl;
 let windowEl;
 let updateEl;
 
-window.addEventListener("DOMContentLoaded", async () => {
-    windowEl = document.querySelector("#window");
-    storyEl = document.querySelector("#stories-container");
-    updateEl = document.querySelector("#update");
-    updateEl.addEventListener('click', async () => {
-        await invoke("update_stories");
-    });
+async function load_stories() {
+    storyEl.innerHTML = "";
     let stories = await invoke("get_unread_follows");
     stories.forEach(story => {
         let el = document.createElement("div");
@@ -48,5 +43,16 @@ window.addEventListener("DOMContentLoaded", async () => {
             window.location.href = "/story";
         });
     });
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+    windowEl = document.querySelector("#window");
+    storyEl = document.querySelector("#stories-container");
+    updateEl = document.querySelector("#update");
+    updateEl.addEventListener('click', async () => {
+        await invoke("update_stories");
+        await load_stories();
+    });
+    await load_stories();
     windowEl.style.display = null;
 });
