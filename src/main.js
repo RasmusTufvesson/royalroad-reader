@@ -83,7 +83,7 @@ async function loadPage() {
   } else {
     endNoteContEl.classList.add("empty");
   }
-  titleEl.innerText = res.title;
+  titleEl.innerHTML = res.title;
   let author_refs = document.getElementsByClassName("author");
   for(var i = 0; i < author_refs.length; i++) {
     author_refs[i].innerText = res.author;
