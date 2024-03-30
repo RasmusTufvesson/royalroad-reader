@@ -24,7 +24,6 @@ async function set_progress() {
 window.nextPage = async function() {
   chapterIndex += 1;
   let progress_diff = chapterIndex - storedProgress;
-  console.log(progress_diff)
   if (progress_diff == 1) {
     await set_progress();
     reverseEl.classList.add("empty")
@@ -37,7 +36,6 @@ window.nextPage = async function() {
       skipEl.classList.add("empty")
     });
   } else if (progress_diff < 0) {
-    console.log("reverse")
     skipEl.classList.add("empty")
     reverseEl.classList.remove("empty")
     reverseEl.addEventListener('click', async () => {
