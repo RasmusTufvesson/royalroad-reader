@@ -52,7 +52,6 @@ window.nextPage = async function() {
 window.prevPage = async function() {
   chapterIndex -= 1;
   let progress_diff = chapterIndex - storedProgress;
-  console.log(progress_diff)
   if (progress_diff == 1) {
     await set_progress();
     reverseEl.classList.add("empty")
