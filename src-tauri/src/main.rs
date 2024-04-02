@@ -313,6 +313,14 @@ fn update_stories(state: tauri::State<Arc<Mutex<AppState>>>) {
 }
 
 #[tauri::command]
+fn update_follows(state: tauri::State<Arc<Mutex<AppState>>>) {
+    let manager = &mut state.lock().unwrap().manager;
+    for follow in manager.follows {
+        manager.stories[follow].update();
+    }
+}
+
+#[tauri::command]
 fn update_story(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) {
     state.lock().unwrap().manager.stories[story_index].update();
 }

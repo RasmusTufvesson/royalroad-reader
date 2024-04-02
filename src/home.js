@@ -4,6 +4,7 @@ const { appWindow } = window.__TAURI__.window;
 let storyEl;
 let windowEl;
 let updateEl;
+let update2El;
 
 async function load_stories() {
     storyEl.innerHTML = "";
@@ -49,8 +50,13 @@ window.addEventListener("DOMContentLoaded", async () => {
     windowEl = document.querySelector("#window");
     storyEl = document.querySelector("#stories-container");
     updateEl = document.querySelector("#update");
+    update2El = document.querySelector("#update2");
     updateEl.addEventListener('click', async () => {
         await invoke("update_stories");
+        await load_stories();
+    });
+    update2El.addEventListener('click', async () => {
+        await invoke("update_follows");
         await load_stories();
     });
     await load_stories();
