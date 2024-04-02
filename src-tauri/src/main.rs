@@ -315,8 +315,8 @@ fn update_stories(state: tauri::State<Arc<Mutex<AppState>>>) {
 #[tauri::command]
 fn update_follows(state: tauri::State<Arc<Mutex<AppState>>>) {
     let manager = &mut state.lock().unwrap().manager;
-    for follow in manager.follows {
-        manager.stories[follow].update();
+    for follow in &manager.follows {
+        manager.stories[*follow].update();
     }
 }
 
@@ -380,6 +380,7 @@ fn main() {
             download_story,
             get_unread_follows,
             update_story_details,
+            update_follows,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
