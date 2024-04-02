@@ -146,6 +146,21 @@ impl Story {
             chapter.load_content();
         }
     }
+
+    pub fn update_details(&mut self) {
+        let content = reqwest::blocking::get(&self.page_url)
+            .expect("Coundnt get page")
+            .text()
+            .expect("Couldnt get text from page");
+        lazy_static! {
+            static ref TITLE_REGEX: Regex = Regex::new(r#"<meta name="twitter:title" content="(.*?)">"#).unwrap();
+            static ref DESCRIPTION_REGEX: Regex = Regex::new(
+                r#"<div class="description">[\s\S]*?<div class="hidden-content">[\t\n ]*([\s\S]*?)[\t\n ]*<\/div>[\s\S]*?<\/div>"#
+            ).unwrap();
+        }
+        self.title = TITLE_REGEX.captures(&content).unwrap().get(1).unwrap().as_str().to_string();
+        self.description = DESCRIPTION_REGEX.captures(&content).unwrap().get(1).unwrap().as_str().to_string();
+    }
 }
 
 #[derive(Deserialize, Serialize)]

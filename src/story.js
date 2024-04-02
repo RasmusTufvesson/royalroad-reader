@@ -12,6 +12,7 @@ let finishedEl;
 let laterEl;
 let removeEl;
 let updateEl;
+let update2El;
 let downloadEl;
 
 function change_active(element) {
@@ -46,6 +47,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     laterEl = document.querySelector("#read-later-button");
     removeEl = document.querySelector("#remove-button");
     updateEl = document.querySelector("#update");
+    update2El = document.querySelector("#update2");
     downloadEl = document.querySelector("#download");
     let story = await invoke("get_story_info");
     titleEl.innerHTML = "<strong>" + story.title + "</strong>";
@@ -83,6 +85,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     updateEl.addEventListener('click', async () => {
         await invoke("update_story", { storyIndex: story.index });
         await load_chapters(story.index);
+    });
+    updateEl.addEventListener('click', async () => {
+        let updated = await invoke("update_story_details", { storyIndex: story.index });
+        titleEl.innerHTML = "<strong>" + updated.title + "</strong>";
+        infoEl.innerHTML = updated.description;
     });
     downloadEl.addEventListener('click', async () => {
         await invoke("download_story", { storyIndex: story.index });

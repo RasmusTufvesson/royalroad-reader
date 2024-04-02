@@ -322,6 +322,22 @@ fn download_story(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize)
     state.lock().unwrap().manager.stories[story_index].download_all();
 }
 
+#[derive(serde::Serialize)]
+struct UpdateStoryResponse {
+    title: String,
+    description: String,
+}
+
+#[tauri::command]
+fn update_story_details(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize) -> UpdateStoryResponse {
+    let story = &mut state.lock().unwrap().manager.stories[story_index];
+    story.update_details();
+    UpdateStoryResponse {
+        title: story.title.clone(),
+        description: story.description.clone(),
+    }
+}
+
 fn main() {
     let state = Arc::new(Mutex::new(AppState { manager: royalroad::StoryManager::load_or_new(SAVE_FILE), read_page: ReadPage { story_index: 0, chapter_index: 0 }, story_page: StoryPage { story_index: 0 } }));
     tauri::Builder::default()
@@ -355,6 +371,7 @@ fn main() {
             update_story,
             download_story,
             get_unread_follows,
+            update_story_details,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
