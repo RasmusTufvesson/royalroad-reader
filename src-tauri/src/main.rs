@@ -13,8 +13,17 @@ struct AppState {
 }
 
 #[tauri::command]
-fn add_story(state: tauri::State<Arc<Mutex<AppState>>>, url: &str) {
-    let _ = state.lock().unwrap().manager.add_story_from_url(url.to_string());
+fn add_story(state: tauri::State<Arc<Mutex<AppState>>>, url: &str) -> bool {
+    let state = &mut state.lock().unwrap();
+    match state.manager.add_story_from_url(url.to_string()) {
+        Ok(index) => {
+            state.story_page.story_index = index;
+            true
+        }
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[tauri::command]

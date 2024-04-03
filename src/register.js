@@ -10,8 +10,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     registerEl = document.querySelector("#register");
     urlEl = document.querySelector("#url");
     registerEl.addEventListener('click', async () => {
-        await invoke("add_story", { url: urlEl.value });
-        window.location = '/'
+        let success = await invoke("add_story", { url: urlEl.value });
+        if (success) {
+            window.location = '/story';
+        } else {
+            window.location = '/';
+        }
     });
     windowEl.style.display = null;
 });

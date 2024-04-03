@@ -181,14 +181,14 @@ impl StoryManager {
         }
     }
 
-    pub fn add_story_from_url(&mut self, url: String) -> Result<(), &'static str> {
+    pub fn add_story_from_url(&mut self, url: String) -> Result<usize, &'static str> {
         for story in &self.stories {
             if story.page_url == url {
                 return Err("Already loaded");
             }
         }
         self.stories.push(Story::from_page_url(url));
-        Ok(())
+        Ok(self.stories.len()-1)
     }
     
     pub fn save(&self, file: &str) {
