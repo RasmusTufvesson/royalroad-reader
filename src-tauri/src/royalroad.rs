@@ -1,4 +1,4 @@
-use std::{fs::File, io::{Read, Write}};
+use std::{cmp::min, fs::File, io::{Read, Write}};
 use reqwest;
 use lazy_static::lazy_static;
 use regex::Regex;
@@ -137,10 +137,12 @@ impl Story {
         for cap in CHAPTER_REGEX.captures_iter(&content) {
             let name = cap.get(2).unwrap().as_str().to_string();
             if self.chapters[expected_index].name == name {
-                expected_index += 1;
+                if expected_index + 1 != self.chapters.len() {
+                    expected_index += 1;
+                }
             } else {
                 if let Some((index, _)) = self.chapters.iter().enumerate().find(|(_, chapter)| chapter.name == name) {
-                    expected_index = index + 1;
+                    expected_index = min(index + 1, self.chapters.len() - 1);
                 } else {
                     self.chapters.push(Chapter::from_name_and_url(name, "https://www.royalroad.com".to_string() + cap.get(1).unwrap().as_str(), CHAPTER_ID_REGEX.captures(cap.get(1).unwrap().as_str()).unwrap().get(1).unwrap().as_str().parse().unwrap()));
                 }
