@@ -10,10 +10,10 @@ let continueEl;
 let followEl;
 let finishedEl;
 let laterEl;
-let removeEl;
 let updateEl;
 let update2El;
 let downloadEl;
+let modalEl;
 
 function change_active(element) {
     element.classList.toggle("active-button")
@@ -45,10 +45,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     followEl = document.querySelector("#follow-button");
     finishedEl = document.querySelector("#finished-button");
     laterEl = document.querySelector("#read-later-button");
-    removeEl = document.querySelector("#remove-button");
     updateEl = document.querySelector("#update");
     update2El = document.querySelector("#update2");
     downloadEl = document.querySelector("#download");
+    modalEl = document.querySelector("#modal");
     let story = await invoke("get_story_info");
     titleEl.innerHTML = "<strong>" + story.title + "</strong>";
     authorEl.innerHTML = "<small>By " + story.author + "</small>";
@@ -78,7 +78,13 @@ window.addEventListener("DOMContentLoaded", async () => {
         await invoke("change_read_later", { storyIndex: story.index });
         change_active(laterEl);
     });
-    removeEl.addEventListener('click', async () => {
+    document.querySelector("#remove-button").addEventListener('click', async () => {
+        modalEl.style.display = "block";
+    });
+    document.querySelector("#delete-cancel").addEventListener('click', async () => {
+        modalEl.style.display = "none";
+    });
+    document.querySelector("#delete-confirm").addEventListener('click', async () => {
         await invoke("remove_story", { storyIndex: story.index });
         window.location = '/';
     });
