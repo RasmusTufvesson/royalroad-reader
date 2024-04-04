@@ -332,3 +332,38 @@ button:active.active-button {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+.modal-background {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 30px;
+  width: 100%;
+  height: calc(100% - 30px);
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+  animation-name: fade;
+  animation-duration: 0.4s;
+}
+
+.modal {
+  animation-name: animatetop;
+  animation-duration: 400ms;
+}
+
+@keyframes animatetop {
+  from {
+    transform: translateY(-300px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade {
+  from {opacity: 0}
+  to {opacity: 1}
+}

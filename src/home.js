@@ -3,8 +3,8 @@ const { appWindow } = window.__TAURI__.window;
 
 let storyEl;
 let windowEl;
-let updateEl;
-let update2El;
+let regUrlEl;
+let modalEl;
 
 async function load_stories() {
     storyEl.innerHTML = "";
@@ -49,15 +49,29 @@ async function load_stories() {
 window.addEventListener("DOMContentLoaded", async () => {
     windowEl = document.querySelector("#window");
     storyEl = document.querySelector("#stories-container");
-    updateEl = document.querySelector("#update");
-    update2El = document.querySelector("#update2");
-    updateEl.addEventListener('click', async () => {
+    modalEl = document.querySelector("#modal");
+    regUrlEl = document.querySelector("#register-url");
+    document.querySelector("#update").addEventListener('click', async () => {
         await invoke("update_stories");
         await load_stories();
     });
-    update2El.addEventListener('click', async () => {
+    document.querySelector("#update2").addEventListener('click', async () => {
         await invoke("update_follows");
         await load_stories();
+    });
+    document.querySelector("#register").addEventListener('click', async () => {
+        modalEl.style.display = "block";
+    });
+    document.querySelector("#register-cancel").addEventListener('click', async () => {
+        modalEl.style.display = "none";
+    });
+    document.querySelector("#register-confirm").addEventListener('click', async () => {
+        let success = await invoke("add_story", { url: regUrlEl.value });
+        if (success) {
+            window.location = '/story';
+        } else {
+            modalEl.style.display = "none";
+        }
     });
     await load_stories();
     windowEl.style.display = null;
