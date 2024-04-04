@@ -133,10 +133,17 @@ impl Story {
                 r#"fiction/[0-9]*/[^/]*/chapter/([0-9]*)/[^/]*"#
             ).unwrap();
         }
+        let mut expected_index = 0;
         for cap in CHAPTER_REGEX.captures_iter(&content) {
             let name = cap.get(2).unwrap().as_str().to_string();
-            if !self.chapters.iter().any(|chapter| chapter.name == name) {
-                self.chapters.push(Chapter::from_name_and_url(name, "https://www.royalroad.com".to_string() + cap.get(1).unwrap().as_str(), CHAPTER_ID_REGEX.captures(cap.get(1).unwrap().as_str()).unwrap().get(1).unwrap().as_str().parse().unwrap()));
+            if self.chapters[expected_index].name == name {
+                expected_index += 1;
+            } else {
+                if let Some((index, _)) = self.chapters.iter().enumerate().find(|(_, chapter)| chapter.name == name) {
+                    expected_index = index + 1;
+                } else {
+                    self.chapters.push(Chapter::from_name_and_url(name, "https://www.royalroad.com".to_string() + cap.get(1).unwrap().as_str(), CHAPTER_ID_REGEX.captures(cap.get(1).unwrap().as_str()).unwrap().get(1).unwrap().as_str().parse().unwrap()));
+                }
             }
         }
     }
