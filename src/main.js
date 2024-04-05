@@ -101,23 +101,31 @@ window.addEventListener("DOMContentLoaded", async () => {
   windowEl = document.querySelector("#window");
   skipEl = document.querySelector("#set-progress-skip-container");
   reverseEl = document.querySelector("#set-progress-reverse-container");
-  const page = await invoke("get_read_page")
-  storyIndex = page.story_index
-  chapterIndex = page.chapter_index
+  document.querySelector("#delete-start").addEventListener("click", async () => {
+    await invoke("delete_start_note", { storyIndex: storyIndex, chapterIndex: chapterIndex });
+    startNoteContEl.classList.add("empty");
+  });
+  document.querySelector("#delete-end").addEventListener("click", async () => {
+    await invoke("delete_end_note", { storyIndex: storyIndex, chapterIndex: chapterIndex });
+    endNoteContEl.classList.add("empty");
+  });
+  const page = await invoke("get_read_page");
+  storyIndex = page.story_index;
+  chapterIndex = page.chapter_index;
   storedProgress = await invoke("get_story_progress", { storyIndex: storyIndex });
   let progress_diff = chapterIndex - storedProgress;
   if (progress_diff > 1) {
-    skipEl.classList.remove("empty")
+    skipEl.classList.remove("empty");
   } else if (progress_diff < 0) {
-    reverseEl.classList.remove("empty")
+    reverseEl.classList.remove("empty");
   }
   reverseEl.addEventListener('click', async () => {
     await set_progress();
-    reverseEl.classList.add("empty")
+    reverseEl.classList.add("empty");
   });
   skipEl.addEventListener('click', async () => {
     await set_progress();
-    skipEl.classList.add("empty")
+    skipEl.classList.add("empty");
   });
   await loadPage();
   windowEl.style.display = null;

@@ -355,6 +355,22 @@ fn update_story_details(state: tauri::State<Arc<Mutex<AppState>>>, story_index: 
     }
 }
 
+#[tauri::command]
+fn delete_start_note(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize, chapter_index: usize) {
+    let chapter = &mut state.lock().unwrap().manager.stories[story_index].chapters[chapter_index];
+    if let Some(content) = &mut chapter.content {
+        content.start_note = None;
+    }
+}
+
+#[tauri::command]
+fn delete_end_note(state: tauri::State<Arc<Mutex<AppState>>>, story_index: usize, chapter_index: usize) {
+    let chapter = &mut state.lock().unwrap().manager.stories[story_index].chapters[chapter_index];
+    if let Some(content) = &mut chapter.content {
+        content.end_note = None;
+    }
+}
+
 fn main() {
     let state = Arc::new(Mutex::new(AppState { manager: royalroad::StoryManager::load_or_new(SAVE_FILE), read_page: ReadPage { story_index: 0, chapter_index: 0 }, story_page: StoryPage { story_index: 0 } }));
     tauri::Builder::default()
@@ -390,6 +406,8 @@ fn main() {
             get_unread_follows,
             update_story_details,
             update_follows,
+            delete_end_note,
+            delete_start_note,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
