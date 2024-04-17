@@ -372,6 +372,7 @@ button:active.active-button {
   position: absolute;
   right: -30px;
   filter: brightness(0.5);
+  cursor: pointer;
 }
 
 .note {
